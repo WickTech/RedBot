@@ -1,0 +1,25 @@
+{
+  "name": "reddit-keyword-bot",
+  "version": "0.1.0",
+  "description": "A keyword auto-responder bot for Reddit, built on Devvit (Reddit's Developer Platform). Watches a subreddit, replies once to keyword matches (idempotent via Redis), and tracks stats.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "login": "devvit login",
+    "devvit:init": "devvit upload",
+    "dev": "devvit playtest",
+    "deploy": "devvit upload",
+    "publish": "devvit publish",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@devvit/public-api": "0.11.16"
+  },
+  "devDependencies": {
+    "devvit": "0.11.17",
+    "typescript": "5.8.2",
+    "vitest": "3.1.1"
+  }
+}

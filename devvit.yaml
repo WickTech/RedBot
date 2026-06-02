@@ -1,0 +1,4 @@
+# Devvit app configuration.
+# `name` must be globally unique across all Devvit apps and lowercase-hyphenated.
+# Change this to your own unique name before running `devvit upload`.
+name: reddit-keyword-bot
