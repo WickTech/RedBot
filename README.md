@@ -1,5 +1,10 @@
 # 🤖 Reddit Keyword Bot
 
+[![CI](https://github.com/WickTech/RedBot/actions/workflows/ci.yml/badge.svg)](https://github.com/WickTech/RedBot/actions/workflows/ci.yml)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)
+![Devvit](https://img.shields.io/badge/Devvit-Reddit-FF4500?logo=reddit&logoColor=white)
+![Vitest](https://img.shields.io/badge/tested_with-vitest-6E9F18?logo=vitest&logoColor=white)
+
 A keyword auto-responder for Reddit, built on **[Devvit](https://developers.reddit.com/)**
 (Reddit's official Developer Platform). It watches a subreddit, replies **exactly once** to
 comments that match moderator-configured keywords, enforces a per-user cooldown, and tracks
