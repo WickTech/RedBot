@@ -42,6 +42,8 @@ function escapeRegExp(literal: string): string {
  */
 function buildKeywordPattern(keyword: string): RegExp {
   const escaped = escapeRegExp(keyword.trim());
+  // Input is fully escaped above, so no user-controlled regex syntax reaches here.
+  // nosemgrep: detect-non-literal-regexp
   return new RegExp(`(?:^|\\s)${escaped}(?=$|\\s|[.,!?;:])`, 'i');
 }
 
