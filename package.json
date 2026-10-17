@@ -15,11 +15,14 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@devvit/public-api": "0.11.16"
+    "@devvit/public-api": "^0.13.10"
   },
   "devDependencies": {
-    "devvit": "0.11.17",
+    "devvit": "^0.11.17",
     "typescript": "5.8.2",
-    "vitest": "3.1.1"
+    "vitest": "^3.2.7"
+  },
+  "overrides": {
+    "protobufjs": "^8.7.1"
   }
 }
