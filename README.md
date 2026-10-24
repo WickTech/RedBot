@@ -1,5 +1,7 @@
 # 🤖 Reddit Keyword Bot
 
+> **Archived.** A finished example, kept read-only: a Reddit keyword auto-responder built on Devvit. For my current backend work see [walletd](https://github.com/WickTech/walletd).
+
 [![CI](https://github.com/WickTech/RedBot/actions/workflows/ci.yml/badge.svg)](https://github.com/WickTech/RedBot/actions/workflows/ci.yml)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)
 ![Devvit](https://img.shields.io/badge/Devvit-Reddit-FF4500?logo=reddit&logoColor=white)
