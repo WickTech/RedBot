@@ -8,12 +8,13 @@
  *   4. Idempotency: claim the comment id once (markIfNew) so retries/backfills
  *      can't double-reply.
  *   5. Cooldown: rate-limit the same user re-triggering the same keyword.
- *   6. Reply via the Reddit API and record stats.
+ *   6. Reply via the Reddit API and record stats. If the reply fails, the
+ *      claims from steps 4-5 are released so a retry can handle the comment.
  */
 import type { TriggerContext } from '@devvit/public-api';
 import type { CommentSubmit } from '@devvit/protos';
 import { matchFirst, renderReply } from '../lib/keywords.js';
-import { markIfNew, claimCooldown } from '../lib/dedup.js';
+import { markIfNew, claimCooldown, unmark, releaseCooldown } from '../lib/dedup.js';
 import { Stats } from '../lib/stats.js';
 import { loadConfig } from '../settings.js';
 
@@ -58,7 +59,15 @@ export async function handleCommentSubmit(
     reply: rule.reply,
   });
 
-  await context.reddit.submitComment({ id: comment.id, text: body });
+  // The comment is only durably "handled" once the reply is submitted: on
+  // failure release the claims (and rethrow) so a retry is not silently skipped.
+  try {
+    await context.reddit.submitComment({ id: comment.id, text: body });
+  } catch (err) {
+    await unmark(context.redis, comment.id);
+    await releaseCooldown(context.redis, author, matchedKeyword);
+    throw err;
+  }
   await stats.incReplied(matchedKeyword);
 
   console.log(`[kwbot] replied to ${comment.id} (u/${author}, keyword="${matchedKeyword}")`);

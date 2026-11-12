@@ -29,6 +29,7 @@ export interface RedisLike {
     options?: { nx?: boolean; xx?: boolean; expiration?: Date },
   ): Promise<string>;
   exists(...keys: string[]): Promise<number>;
+  del(...keys: string[]): Promise<void>;
 }
 
 /** Key prefix for per-thing "already handled" markers. */
@@ -59,6 +60,15 @@ export async function markIfNew(
   // With NX, a truthy result means the write happened (we just claimed the id);
   // an empty/nil result means the key already existed (someone got here first).
   return Boolean(result);
+}
+
+/**
+ * Release a claim made by {@link markIfNew}. Call this when handling failed
+ * (e.g. the reply could not be submitted) so a retry can process the comment
+ * again instead of it being silently lost.
+ */
+export async function unmark(redis: RedisLike, thingId: string): Promise<void> {
+  await redis.del(SEEN_PREFIX + thingId);
 }
 
 /** Non-mutating check: has `thingId` already been handled? */
@@ -94,4 +104,13 @@ export async function claimCooldown(
   const expiration = new Date(now.getTime() + cooldownSeconds * 1000);
   const result = await redis.set(key, '1', { nx: true, expiration });
   return Boolean(result);
+}
+
+/** Release a cooldown slot claimed by {@link claimCooldown} (used when the reply failed). */
+export async function releaseCooldown(
+  redis: RedisLike,
+  user: string,
+  keyword: string,
+): Promise<void> {
+  await redis.del(`${COOLDOWN_PREFIX}${user}:${keyword}`);
 }
