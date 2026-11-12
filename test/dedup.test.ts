@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { markIfNew, isSeen, claimCooldown, type RedisLike } from '../src/lib/dedup.js';
+import { markIfNew, isSeen, claimCooldown, unmark, releaseCooldown, type RedisLike } from '../src/lib/dedup.js';
 
 /**
  * In-memory fake of the small Redis surface dedup needs, including SET NX
@@ -20,6 +20,10 @@ class FakeRedis implements RedisLike {
       expiresAt: options?.expiration?.getTime(),
     });
     return value;
+  }
+
+  async del(...keys: string[]): Promise<void> {
+    for (const k of keys) this.store.delete(k);
   }
 
   async exists(...keys: string[]): Promise<number> {
@@ -94,5 +98,23 @@ describe('claimCooldown', () => {
   it('always grants when cooldown is disabled (<= 0)', async () => {
     expect(await claimCooldown(redis, 'alice', 'help', 0)).toBe(true);
     expect(await claimCooldown(redis, 'alice', 'help', 0)).toBe(true);
+  });
+});
+
+describe('unmark / releaseCooldown', () => {
+  it('unmark lets the same comment be claimed again', async () => {
+    const r = new FakeRedis();
+    expect(await markIfNew(r, 't1_a')).toBe(true);
+    await unmark(r, 't1_a');
+    expect(await isSeen(r, 't1_a')).toBe(false);
+    expect(await markIfNew(r, 't1_a')).toBe(true);
+  });
+
+  it('releaseCooldown frees the slot', async () => {
+    const r = new FakeRedis();
+    expect(await claimCooldown(r, 'bob', 'help', 60)).toBe(true);
+    expect(await claimCooldown(r, 'bob', 'help', 60)).toBe(false);
+    await releaseCooldown(r, 'bob', 'help');
+    expect(await claimCooldown(r, 'bob', 'help', 60)).toBe(true);
   });
 });
