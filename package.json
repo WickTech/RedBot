@@ -20,7 +20,7 @@
   "devDependencies": {
     "devvit": "^0.15.3",
     "typescript": "5.8.2",
-    "vitest": "^3.2.7"
+    "vitest": "^5.1.0"
   },
   "overrides": {
     "protobufjs": "^8.7.1"
